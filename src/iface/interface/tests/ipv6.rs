@@ -1896,7 +1896,8 @@ fn inject_router_advert(
         hop_limit: 255,
         payload_len: advertisement.buffer_len(),
     });
-    let frame_len = EthernetFrame::<&[u8]>::header_len() + ip_repr.header_len() + advertisement.buffer_len();
+    let frame_len =
+        EthernetFrame::<&[u8]>::header_len() + ip_repr.header_len() + advertisement.buffer_len();
     let mut eth_bytes = vec![0u8; frame_len];
     let mut frame = EthernetFrame::new_unchecked(&mut eth_bytes);
     frame.set_dst_addr(local_hw_addr);
@@ -1941,9 +1942,11 @@ fn test_router_advert_sllao_fills_neighbor_cache() {
     let mut sockets = SocketSet::new(vec![]);
 
     // Before the RA, the router's link-layer address should not be cached.
-    assert!(!iface
-        .inner
-        .neighbor_cache_has(IpAddress::Ipv6(remote_ip_addr.address())));
+    assert!(
+        !iface
+            .inner
+            .neighbor_cache_has(IpAddress::Ipv6(remote_ip_addr.address()))
+    );
 
     // Inject an RA with SLLAO.
     inject_router_advert(
@@ -1958,9 +1961,11 @@ fn test_router_advert_sllao_fills_neighbor_cache() {
     );
 
     // The router's link-layer address must now be in the neighbor cache.
-    assert!(iface
-        .inner
-        .neighbor_cache_has(IpAddress::Ipv6(remote_ip_addr.address())));
+    assert!(
+        iface
+            .inner
+            .neighbor_cache_has(IpAddress::Ipv6(remote_ip_addr.address()))
+    );
 }
 
 /// An RA without an SLLAO must not cache anything (no regression).
@@ -1995,9 +2000,11 @@ fn test_router_advert_no_sllao_does_not_fill_neighbor_cache() {
         None, // no SLLAO
     );
 
-    assert!(!iface
-        .inner
-        .neighbor_cache_has(IpAddress::Ipv6(remote_ip_addr.address())));
+    assert!(
+        !iface
+            .inner
+            .neighbor_cache_has(IpAddress::Ipv6(remote_ip_addr.address()))
+    );
 }
 
 /// Two RAs from different routers must both appear in default_ipv6_routers()
@@ -2013,11 +2020,9 @@ fn test_multiple_default_routers() {
     let local_ip_addr =
         Ipv6Cidr::from_link_prefix(&ll_prefix, HardwareAddress::Ethernet(local_hw_addr)).unwrap();
     let router1_ip_addr =
-        Ipv6Cidr::from_link_prefix(&ll_prefix, HardwareAddress::Ethernet(router1_hw_addr))
-            .unwrap();
+        Ipv6Cidr::from_link_prefix(&ll_prefix, HardwareAddress::Ethernet(router1_hw_addr)).unwrap();
     let router2_ip_addr =
-        Ipv6Cidr::from_link_prefix(&ll_prefix, HardwareAddress::Ethernet(router2_hw_addr))
-            .unwrap();
+        Ipv6Cidr::from_link_prefix(&ll_prefix, HardwareAddress::Ethernet(router2_hw_addr)).unwrap();
 
     let mut config = Config::new(HardwareAddress::Ethernet(local_hw_addr));
     config.slaac = true;
@@ -2054,12 +2059,16 @@ fn test_multiple_default_routers() {
     // Note: poll calls sync_slaac_state which calls update_ip_addrs; if the address list
     // changes (e.g. a SLAAC prefix address is added) the neighbor cache will be flushed.
     // Checking here before poll avoids that race in this test which sends no prefix.
-    assert!(iface
-        .inner
-        .neighbor_cache_has(IpAddress::Ipv6(router1_ip_addr.address())));
-    assert!(iface
-        .inner
-        .neighbor_cache_has(IpAddress::Ipv6(router2_ip_addr.address())));
+    assert!(
+        iface
+            .inner
+            .neighbor_cache_has(IpAddress::Ipv6(router1_ip_addr.address()))
+    );
+    assert!(
+        iface
+            .inner
+            .neighbor_cache_has(IpAddress::Ipv6(router2_ip_addr.address()))
+    );
 
     // Sync SLAAC state so routes are pushed to the interface route table.
     iface.poll(Instant::ZERO, &mut device, &mut sockets);

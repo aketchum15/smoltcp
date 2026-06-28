@@ -527,10 +527,12 @@ impl InterfaceInner {
                     #[cfg(any(feature = "medium-ethernet", feature = "medium-ieee802154"))]
                     if let Some(lladdr) = lladdr
                         && let Ok(hw_addr) = lladdr.parse(self.caps.medium)
-                            && hw_addr.is_unicast() && ip_repr.src_addr.x_is_unicast() {
-                                self.neighbor_cache
-                                    .fill(ip_repr.src_addr.into(), hw_addr, self.now);
-                            }
+                        && hw_addr.is_unicast()
+                        && ip_repr.src_addr.x_is_unicast()
+                    {
+                        self.neighbor_cache
+                            .fill(ip_repr.src_addr.into(), hw_addr, self.now);
+                    }
                     self.slaac.process_advertisement(
                         &ip_repr.src_addr,
                         router_lifetime,
