@@ -1037,7 +1037,7 @@ impl InterfaceInner {
 
     /// Return whether the neighbor cache has a live entry for the given address (direct lookup,
     /// no routing). Used by tests to verify SLLAO capture without going through routing logic.
-    #[cfg(any(feature = "medium-ethernet", feature = "medium-ieee802154"))]
+    #[cfg(all(test, any(feature = "medium-ethernet", feature = "medium-ieee802154")))]
     pub(crate) fn neighbor_cache_has(&self, addr: IpAddress) -> bool {
         self.neighbor_cache.lookup(&addr, self.now).found()
     }
@@ -1208,7 +1208,6 @@ impl InterfaceInner {
         #[cfg(any(feature = "medium-ethernet", feature = "medium-ieee802154"))]
         self.neighbor_cache.flush()
     }
-
 
     fn dispatch_ip<Tx: TxToken>(
         &mut self,
